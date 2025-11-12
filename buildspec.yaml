@@ -18,15 +18,11 @@ phases:
       - docker tag mindtrack:latest $ECR_REPO_URI:latest
   post_build:
     commands:
-      - echo "Pushing image to ECR..."
-      - docker push $ECR_REPO_URI:latest
       - echo "Updating kubeconfig for EKS..."
       - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
-      - echo "Authenticating to EKS..."
+      - echo "Authenticating..."
       - aws eks get-token --region $AWS_DEFAULT_REGION --cluster-name $EKS_CLUSTER_NAME > /dev/null
-      - echo "Deploying to EKS..."
-      - echo "Current kubeconfig context:"
-      - kubectl config get-contexts
+      - echo "Deploying manifests..."
       - kubectl apply -f deployment.yaml --validate=false
       - kubectl apply -f service.yaml --validate=false
 

@@ -1,0 +1,25 @@
+version: 0.2
+
+env:
+  variables:
+    EKS_CLUSTER_NAME: "my-eks-cluster"
+    AWS_DEFAULT_REGION: "us-east-2"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Setting up kubeconfig for EKS..."
+      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
+      - echo "Fetching new image URI from build artifact..."
+      - IMAGE_URI=$(cat imageDetail.json | jq -r '.ImageURI')
+  build:
+    commands:
+      - echo "Deploying image: $IMAGE_URI"
+      - sed -i "s|image:.*|image: $IMAGE_URI|g" deployment.yaml
+      - kubectl apply -f deployment.yaml --validate=false
+      - kubectl apply -f service.yaml --validate=false
+      - echo "Verifying rollout..."
+      - kubectl rollout status deployment/mindtrack-deployment
+  post_build:
+    commands:
+      - echo "✅ Deployment successful."

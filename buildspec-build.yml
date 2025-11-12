@@ -1,0 +1,26 @@
+version: 0.2
+
+env:
+  variables:
+    ECR_REPO_URI: "740141505157.dkr.ecr.us-east-2.amazonaws.com/project-1/mindtrack"
+    AWS_DEFAULT_REGION: "us-east-2"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging into Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_URI="$ECR_REPO_URI:$IMAGE_TAG"
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -t $IMAGE_URI ./dist
+      - docker push $IMAGE_URI
+  post_build:
+    commands:
+      - echo "Writing image definition file for next stage..."
+      - printf '{"ImageURI":"%s"}' $IMAGE_URI > imageDetail.json
+artifacts:
+  files:
+    - imageDetail.json

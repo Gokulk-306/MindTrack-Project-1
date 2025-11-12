@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    ECR_REPO_URI: "740141505157.dkr.ecr.us-east-2.amazonaws.com/project-1/mindtrack"
+    EKS_CLUSTER_NAME: "my-eks-cluster"
+    AWS_DEFAULT_REGION: "us-east-2"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging into Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
+  build:
+    commands:
+      - echo "Building the Docker image..."
+      - docker build -t mindtrack ./dist
+      - docker tag mindtrack:latest $ECR_REPO_URI:latest
+  post_build:
+    commands:
+      - echo "Pushing Docker image to ECR..."
+      - docker push $ECR_REPO_URI:latest
+      - echo "Updating kubeconfig for EKS..."
+      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
+      - echo "Deploying to EKS..."
+      - kubectl apply -f deployment.yaml
+      - kubectl apply -f service.yaml
+
+artifacts:
+  files:
+    - '**/*'

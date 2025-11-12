@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mindtrack-deployment
+  labels:
+    app: mindtrack
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mindtrack
+  template:
+    metadata:
+      labels:
+        app: mindtrack
+    spec:
+      containers:
+        - name: mindtrack
+          image: 740141505157.dkr.ecr.us-east-2.amazonaws.com/project-1/mindtrack:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000

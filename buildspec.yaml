@@ -17,14 +17,18 @@ phases:
       - docker build -t mindtrack ./dist
       - docker tag mindtrack:latest $ECR_REPO_URI:latest
   post_build:
-    commands:
-      - echo "Pushing Docker image to ECR..."
-      - docker push $ECR_REPO_URI:latest
-      - echo "Updating kubeconfig for EKS..."
-      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
-      - echo "Deploying to EKS..."
-      - kubectl apply -f deployment.yaml
-      - kubectl apply -f service.yaml
+  commands:
+    - echo "Pushing image to ECR..."
+    - docker push $ECR_REPO_URI:latest
+    - echo "Updating kubeconfig for EKS..."
+    - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME --role-arn arn:aws:iam::740141505157:role/service-role/codebuild-code-build-demo-service-role
+    - echo "Authenticating to EKS..."
+    - aws eks get-token --region $AWS_DEFAULT_REGION --cluster-name $EKS_CLUSTER_NAME > /dev/null
+    - echo "Deploying to EKS..."
+    - echo "Current kubeconfig context:"
+    - kubectl config get-contexts
+    - kubectl apply -f deployment.yaml --validate=false
+    - kubectl apply -f service.yaml --validate=false
 
 artifacts:
   files:

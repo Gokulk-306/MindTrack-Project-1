@@ -14,6 +14,7 @@ phases:
       - IMAGE_URI=$(cat imageDetail.json | jq -r '.ImageURI')
   build:
     commands:
+      - echo "Deploying..."
       - echo "Deploying image: $IMAGE_URI"
       - sed -i "s|image:.*|image: $IMAGE_URI|g" deployment.yaml
       - kubectl apply -f deployment.yaml --validate=false

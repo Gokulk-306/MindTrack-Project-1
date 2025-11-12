@@ -7,6 +7,15 @@ env:
     AWS_DEFAULT_REGION: "us-east-2"
 
 phases:
+  install:
+    runtime-versions:
+      docker: 20
+    commands:
+      - echo "Installing dependencies (kubectl + jq)..."
+      - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      - chmod +x kubectl && mv kubectl /usr/local/bin/
+      - yum install -y jq
+      - kubectl version --client
   pre_build:
     commands:
       - echo "Logging into Amazon ECR..."
@@ -24,11 +33,10 @@ phases:
       - echo "Updating kubeconfig for EKS..."
       - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
 
-      - echo "Generating authentication token for EKS..."
-      - export AWS_STS_REGIONAL_ENDPOINTS=regional
-      - aws eks get-token --region $AWS_DEFAULT_REGION --cluster-name $EKS_CLUSTER_NAME > /dev/null
+      - echo "Verifying AWS identity..."
+      - aws sts get-caller-identity
 
-      - echo "Testing access to cluster..."
+      - echo "Testing access to EKS cluster..."
       - kubectl get nodes || (echo "❌ Authentication failed" && exit 1)
 
       - echo "Deploying Kubernetes manifests..."
@@ -36,7 +44,7 @@ phases:
       - kubectl apply -f service.yaml --validate=false
 
       - echo "✅ Deployment completed successfully."
-      
+
 artifacts:
   files:
     - '**/*'

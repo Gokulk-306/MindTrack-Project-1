@@ -7,13 +7,22 @@ env:
     AWS_DEFAULT_REGION: "us-east-2"
 
 phases:
+  install:
+    runtime-versions:
+      docker: 20
+    commands:
+      - echo "Installing dependencies (kubectl + jq)..."
+      - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      - chmod +x kubectl && mv kubectl /usr/local/bin/
+      - yum install -y jq
+      - kubectl version --client
   pre_build:
     commands:
       - echo "Logging into Amazon ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
   build:
     commands:
-      - echo "Building the Docker image..."
+      - echo "Building Docker image..."
       - docker build -t mindtrack ./dist
       - docker tag mindtrack:latest $ECR_REPO_URI:latest
   post_build:
@@ -27,15 +36,19 @@ phases:
       - echo "Verifying AWS identity..."
       - aws sts get-caller-identity
 
-      - echo "Testing access to EKS cluster..."
-      - kubectl get nodes || (echo "❌ Authentication failed" && exit 1)
+      - echo "Getting EKS token explicitly..."
+      - TOKEN=$(aws eks get-token --region $AWS_DEFAULT_REGION --cluster-name $EKS_CLUSTER_NAME | jq -r '.status.token')
+      - if [ -z "$TOKEN" ]; then echo "❌ Failed to get token"; exit 1; fi
+      - echo "Token generated successfully."
 
-      - echo "Deploying Kubernetes manifests..."
-      - kubectl apply -f deployment.yaml --validate=false
-      - kubectl apply -f service.yaml --validate=false
+      - echo "Testing access to EKS cluster with explicit token..."
+      - kubectl --token "$TOKEN" get nodes || (echo "❌ Authentication failed"; exit 1)
+
+      - echo "Deploying manifests..."
+      - kubectl --token "$TOKEN" apply -f deployment.yaml --validate=false
+      - kubectl --token "$TOKEN" apply -f service.yaml --validate=false
 
       - echo "✅ Deployment completed successfully."
-
 artifacts:
   files:
     - '**/*'

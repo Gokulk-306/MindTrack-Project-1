@@ -21,7 +21,7 @@ phases:
       - echo "Pushing image to ECR..."
       - docker push $ECR_REPO_URI:latest
       - echo "Updating kubeconfig for EKS..."
-      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME --role-arn arn:aws:iam::740141505157:role/service-role/codebuild-code-build-demo-service-role
+      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
       - echo "Authenticating to EKS..."
       - aws eks get-token --region $AWS_DEFAULT_REGION --cluster-name $EKS_CLUSTER_NAME > /dev/null
       - echo "Deploying to EKS..."

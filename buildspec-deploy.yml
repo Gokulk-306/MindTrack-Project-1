@@ -12,7 +12,6 @@ phases:
       - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
       - echo "Fetching new image URI from build artifact..."
       - IMAGE_URI=$(cat imageDetail.json | jq -r '.ImageURI')
-
   build:
     commands:
       - echo "Deploying image: $IMAGE_URI"
@@ -21,7 +20,6 @@ phases:
       - kubectl apply -f service.yaml --validate=false
       - echo "Verifying rollout..."
       - kubectl rollout status deployment/mindtrack-deployment
-
   post_build:
     commands:
       - echo "Deployment successful."

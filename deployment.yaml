@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: mindtrack
-          image: 740141505157.dkr.ecr.us-east-2.amazonaws.com/project-1/mindtrack:latest
+          image: ${IMAGE_URI}
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

@@ -65,6 +65,27 @@ This project demonstrates a complete CI/CD workflow for deploying a containerize
 
 ---
 
+## 📸 Screenshots & Evidence
+
+All required screenshots for this project have been uploaded to Google Drive.
+
+📂 **Screenshots Drive Link:**  
+👉 [Click here to view screenshots](https://docs.google.com/document/d/1t721hgZKRml2X4aB-lBu6A2s4RKwih76isow8DYBTHc/edit?usp=sharing)
+
+The folder includes:
+- Docker build output  
+- ECR repository & pushed image  
+- EKS cluster & nodes  
+- Deployment & pods running  
+- LoadBalancer details  
+- CodeBuild (Build stage) logs  
+- CodeBuild (Deploy stage) logs  
+- CodeDeploy application  
+- CodePipeline execution screenshots  
+- Application running in browser  
+
+---
+
 ## 🧑‍💻 Author
 **Gokul K**  
 Devops Enthusiast

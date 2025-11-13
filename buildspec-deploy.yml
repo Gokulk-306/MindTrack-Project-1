@@ -1,4 +1,3 @@
-# refreshing pipeline cache
 version: 0.2
 
 env:
@@ -13,13 +12,16 @@ phases:
       - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
       - echo "Fetching new image URI from build artifact..."
       - IMAGE_URI=$(cat imageDetail.json | jq -r '.ImageURI')
+
   build:
     commands:
-      - sed -i "s|image:.*|image: $IMAGE_URI|g" deployment.yaml
+      - 'echo "Deploying image: $IMAGE_URI"'
+      - 'sed -i "s|image:.*|image: $IMAGE_URI|g" deployment.yaml'
       - kubectl apply -f deployment.yaml --validate=false
       - kubectl apply -f service.yaml --validate=false
       - echo "Verifying rollout..."
       - kubectl rollout status deployment/mindtrack-deployment
+
   post_build:
     commands:
       - echo "Deployment successful."

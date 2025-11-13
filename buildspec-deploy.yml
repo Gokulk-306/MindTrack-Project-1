@@ -11,12 +11,12 @@ phases:
       - echo "Setting up kubeconfig for EKS..."
       - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
       - echo "Fetching new image URI from build artifact..."
-      - 'export IMAGE_URI=$(cat imageDetail.json | jq -r ".ImageURI")'
-      - echo "Loaded image: $IMAGE_URI"
+      - 'export IMAGE_URI=$(cat imageDetail.json | jq -r .ImageURI)'
+      - 'echo "Loaded image: $IMAGE_URI"'
 
   build:
     commands:
-      - 'echo Deploying image: $IMAGE_URI'
+      - 'echo "Deploying image: $IMAGE_URI"'
       - envsubst < deployment.yaml > deployment-final.yaml
       - kubectl apply -f deployment-final.yaml --validate=false
       - kubectl apply -f service.yaml --validate=false

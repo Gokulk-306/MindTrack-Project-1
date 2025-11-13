@@ -24,4 +24,4 @@ phases:
 
   post_build:
     commands:
-      - echo "✅ Deployment successful."
+      - echo "Deployment successful."

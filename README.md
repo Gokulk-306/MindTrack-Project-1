@@ -78,6 +78,7 @@ The Kubernetes service of type **LoadBalancer** automatically created an AWS Ela
 This LoadBalancer exposes the MindTrack application publicly from the EKS cluster.
 
 Note : I paused the worker nodes and deleted the LoadBalancer to eliminate EC2 and ELB charges. The control plane remains active to avoid reconfiguring the cluster. I can scale nodes back up and redeploy.
+
 ---
 
 ## 📸 Screenshots & Evidence

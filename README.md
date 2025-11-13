@@ -65,6 +65,20 @@ This project demonstrates a complete CI/CD workflow for deploying a containerize
 
 ---
 
+## 🌐 Application LoadBalancer ARN
+
+The Kubernetes service of type **LoadBalancer** automatically created an AWS Elastic Load Balancer (ELB).
+
+🔗 **LoadBalancer ARN:**  
+`arn:aws:elasticloadbalancing:us-east-2:740141505157:loadbalancer/a63f70ab65dfd4bee810e5e8b4ec1d2f`
+
+🔗 **LoadBalancer DNS / Public URL:**  
+`http://a63f70ab65dfd4bee810e5e8b4ec1d2f-440244913.us-east-2.elb.amazonaws.com:3000`
+
+This LoadBalancer exposes the MindTrack application publicly from the EKS cluster.
+
+---
+
 ## 📸 Screenshots & Evidence
 
 All required screenshots for this project have been uploaded to Google Drive.

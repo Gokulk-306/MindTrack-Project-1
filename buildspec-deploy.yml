@@ -11,7 +11,7 @@ phases:
       - echo "Setting up kubeconfig for EKS..."
       - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
       - echo "Fetching new image URI from build artifact..."
-      - 'export IMAGE_URI=$(cat imageDetail.json | jq -r .ImageURI)'
+      - 'export IMAGE_URI=$(cat $CODEBUILD_SRC_DIR_BuildArtifact/imageDetail.json | jq -r .ImageURI)'
       - 'echo "Loaded image: $IMAGE_URI"'
 
   build:
